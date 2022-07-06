@@ -1,4 +1,4 @@
-# Parkour system in Unity
+# Parkour System in Unity
 
 ## Description
 
