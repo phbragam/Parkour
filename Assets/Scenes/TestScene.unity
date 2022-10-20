@@ -1013,6 +1013,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 715e6781e0a18c64ab26be6d150f53a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parkourActions:
+  - {fileID: 11400000, guid: 7e0a9c4720e7fd549a280ce8e6693d4e, type: 2}
+  - {fileID: 11400000, guid: ebdf3bf17c9adf24f89fe40079ca3143, type: 2}
 --- !u!1 &1959861872
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ParkourController : MonoBehaviour
 {
+    [SerializeField] List<ParkourAction> parkourActions;
     bool inAction;
 
     EnviromentScanner enviromentScanner;
@@ -25,21 +26,30 @@ public class ParkourController : MonoBehaviour
 
             if (hitData.forwardHitFound)
             {
-                // Debug.Log("Obstacle found" + hitData.forwardHit.transform.name);
-                StartCoroutine(DoParkourAction());
+                foreach (var action in parkourActions)
+                {
+                    if (action.CheckIfPossible(hitData, transform))
+                    {
+                        // Debug.Log("Obstacle found" + hitData.forwardHit.transform.name);
+                        StartCoroutine(DoParkourAction(action));
+                        break;
+                    }
+                }
             }
         }
 
     }
 
-    IEnumerator DoParkourAction()
+    IEnumerator DoParkourAction(ParkourAction action)
     {
         inAction = true;
         playerController.SetControl(false);
-        animator.CrossFade("StepUp", 0.2f);
+        animator.CrossFade(action.AnimName, 0.2f);
         yield return null;
 
         var animState = animator.GetNextAnimatorStateInfo(0);
+        if (!animState.IsName(action.AnimName))
+            Debug.LogError("The parkour animation is wrong!");
 
         yield return new WaitForSeconds(animState.length);
 
