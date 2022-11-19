@@ -11,12 +11,14 @@ public class ParkourAction : ScriptableObject
     [SerializeField] float maxHeight;
 
     [SerializeField] bool rotateToObstacle;
+    [SerializeField] float postActionDelay;
 
     [Header("Target Matching")]
     [SerializeField] bool enableTargetMatching = true;
     [SerializeField] AvatarTarget matchBodyPart;
     [SerializeField] float matchStartTime;
     [SerializeField] float matchTargetTime;
+    [SerializeField] Vector3 matchPosWeight = new Vector3(0, 1, 0);
 
     // smaller way to create a property. In this case you dont need 
     // to declare a private variable but also Unity dont allow to
@@ -41,9 +43,10 @@ public class ParkourAction : ScriptableObject
 
     public string AnimName => animName;
     public bool RotateToObstacle => rotateToObstacle;
-
+    public float PostActionDelay => postActionDelay;
     public bool EnableTargetMatching => enableTargetMatching;
     public AvatarTarget MatchBodyPart => matchBodyPart;
     public float MatchStartTime => matchStartTime;
     public float MatchTargetTime => matchTargetTime;
+    public Vector3 MatchPosWeight => matchPosWeight;
 }
