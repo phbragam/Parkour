@@ -63,6 +63,10 @@ public class ParkourController : MonoBehaviour
             if (action.EnableTargetMatching)
                 MatchTarget(action);
 
+            // checking if timer is > .5 because we dont want to check transition from other animamation to actual animation
+            if(animator.IsInTransition(0) && timer > .5f)
+                break;
+
             yield return null;
         }
 

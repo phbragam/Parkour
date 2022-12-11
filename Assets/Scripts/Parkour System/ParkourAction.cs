@@ -6,6 +6,7 @@ using UnityEngine;
 public class ParkourAction : ScriptableObject
 {
     [SerializeField] string animName;
+    [SerializeField] string obstacleTag;
 
     [SerializeField] float minHeight;
     [SerializeField] float maxHeight;
@@ -28,6 +29,10 @@ public class ParkourAction : ScriptableObject
 
     public bool CheckIfPossible(ObstacleHitData hitData, Transform player)
     {
+        // Check tag
+        if(!string.IsNullOrEmpty(obstacleTag) && hitData.forwardHit.transform.tag != obstacleTag)
+            return false;
+            
         float height = hitData.heightHit.point.y - player.position.y;
         if (height < minHeight || height > maxHeight)
             return false;
