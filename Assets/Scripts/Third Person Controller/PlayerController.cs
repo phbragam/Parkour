@@ -15,12 +15,16 @@ public class PlayerController : MonoBehaviour
     bool isGrounded;
     bool hasControl = true;
 
+    public bool IsOnLedge { get; set; }
+    public LedgeData LedgeData { get; set; }
+
     float ySpeed;
 
     Quaternion targetRotation;
     CameraController cameraController;
     Animator animator;
     CharacterController characterController;
+    EnviromentScanner enviromentScanner;
 
 
     private void Awake()
@@ -28,6 +32,7 @@ public class PlayerController : MonoBehaviour
         cameraController = Camera.main.GetComponent<CameraController>();
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
+        enviromentScanner = GetComponent<EnviromentScanner>();
     }
 
     private void Update()
@@ -45,17 +50,29 @@ public class PlayerController : MonoBehaviour
 
         if (!hasControl) return;
 
+        var velocity = Vector3.zero;
+
         GroundCheck();
+        animator.SetBool("isGrounded", isGrounded);
         if (isGrounded)
         {
             ySpeed = -0.5f;
+            velocity = moveDir * moveSpeed;
+
+            IsOnLedge = enviromentScanner.LedgeCheck(moveDir, out LedgeData ledgeData);
+
+            if (IsOnLedge)
+            {
+                LedgeData = ledgeData;
+                Debug.Log("On ledge");
+            }
         }
         else
         {
             ySpeed += Physics.gravity.y * Time.deltaTime;
+            velocity = transform.forward * moveSpeed / 2;
         }
 
-        var velocity = moveDir * moveSpeed;
         velocity.y = ySpeed;
 
         // frame rate independent because of Time.deltaTime
