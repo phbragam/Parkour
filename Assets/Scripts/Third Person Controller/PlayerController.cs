@@ -15,6 +15,10 @@ public class PlayerController : MonoBehaviour
     bool isGrounded;
     bool hasControl = true;
 
+    Vector3 desiredMoveDir;
+    Vector3 moveDir;
+    Vector3 velocity;
+
     public bool IsOnLedge { get; set; }
     public LedgeData LedgeData { get; set; }
 
@@ -46,26 +50,29 @@ public class PlayerController : MonoBehaviour
         var moveInput = (new Vector3(h, 0, v)).normalized;
 
         // make movement be in the direction of the camera (ignoring rotation X)
-        var moveDir = cameraController.PlanarRotation * moveInput;
+        desiredMoveDir = cameraController.PlanarRotation * moveInput;
+        moveDir = desiredMoveDir;
 
         if (!hasControl) return;
 
-        var velocity = Vector3.zero;
+        velocity = Vector3.zero;
 
         GroundCheck();
         animator.SetBool("isGrounded", isGrounded);
         if (isGrounded)
         {
             ySpeed = -0.5f;
-            velocity = moveDir * moveSpeed;
+            velocity = desiredMoveDir * moveSpeed;
 
-            IsOnLedge = enviromentScanner.LedgeCheck(moveDir, out LedgeData ledgeData);
+            IsOnLedge = enviromentScanner.LedgeCheck(desiredMoveDir, out LedgeData ledgeData);
 
             if (IsOnLedge)
             {
                 LedgeData = ledgeData;
-                Debug.Log("On ledge");
+                LedgeMovement();
             }
+
+            animator.SetFloat("moveAmount", velocity.magnitude / moveSpeed, 0.2f, Time.deltaTime);
         }
         else
         {
@@ -78,21 +85,48 @@ public class PlayerController : MonoBehaviour
         // frame rate independent because of Time.deltaTime
         characterController.Move(velocity * Time.deltaTime);
 
-        if (moveAmount > 0)
+        if (moveAmount > 0 && moveDir.magnitude > 0.2f)
         {
             // make character face move direction
-            targetRotation = Quaternion.LookRotation(moveDir);
+            targetRotation = Quaternion.LookRotation(desiredMoveDir);
         }
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation,
             rotationSpeed * Time.deltaTime);
 
-        animator.SetFloat("moveAmount", moveAmount, 0.2f, Time.deltaTime);
     }
 
     void GroundCheck()
     {
         isGrounded = Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
+    }
+
+    void LedgeMovement()
+    {
+        float signedAngle = Vector3.SignedAngle(LedgeData.surfaceHit.normal, desiredMoveDir, Vector3.up);
+        float angle = Mathf.Abs(signedAngle);
+
+        if (Vector3.Angle(desiredMoveDir, transform.forward) >= 80)
+        {
+            // Dont move, but rotate
+            velocity = Vector3.zero;
+            return;
+        }
+
+        if (angle < 90)
+        {
+            velocity = Vector3.zero;
+            moveDir = Vector3.zero;
+        }
+        else if (angle < 90)
+        {
+            // Angle b/w 60 and 90, so limit velocity to horizontal direction
+            var left = Vector3.Cross(Vector3.up, LedgeData.surfaceHit.normal);
+            var dir = left * Mathf.Sign(signedAngle);
+
+            velocity = velocity.magnitude * dir;
+            moveDir = dir;
+        }
     }
 
     public void SetControl(bool hasControl)
