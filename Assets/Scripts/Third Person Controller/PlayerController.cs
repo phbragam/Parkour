@@ -88,7 +88,7 @@ public class PlayerController : MonoBehaviour
         if (moveAmount > 0 && moveDir.magnitude > 0.2f)
         {
             // make character face move direction
-            targetRotation = Quaternion.LookRotation(desiredMoveDir);
+            targetRotation = Quaternion.LookRotation(moveDir);
         }
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation,

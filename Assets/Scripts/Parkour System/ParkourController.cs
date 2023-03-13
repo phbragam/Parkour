@@ -6,6 +6,7 @@ public class ParkourController : MonoBehaviour
 {
     [SerializeField] List<ParkourAction> parkourActions;
     [SerializeField] ParkourAction jumpDownAction;
+    [SerializeField] float autoDropHeightLimit = 1f;
     bool inAction;
 
     EnviromentScanner enviromentScanner;
@@ -25,7 +26,7 @@ public class ParkourController : MonoBehaviour
 
         if (Input.GetButton("Jump") && !inAction)
         {
-            
+
             if (hitData.forwardHitFound)
             {
                 foreach (var action in parkourActions)
@@ -40,9 +41,16 @@ public class ParkourController : MonoBehaviour
             }
         }
 
-        if (playerController.IsOnLedge && !inAction && !hitData.forwardHitFound && Input.GetButton("Jump"))
+        if (playerController.IsOnLedge && !inAction && !hitData.forwardHitFound)
         {
-            if (playerController.LedgeData.angle <= 50f)
+            bool shouldJump = true;
+
+            if (playerController.LedgeData.heigth > autoDropHeightLimit && !Input.GetButton("Jump"))
+            {
+                shouldJump = false;
+            }
+
+            if (shouldJump && playerController.LedgeData.angle <= 50f)
             {
                 // Debug.Log(playerController.LedgeData.angle);
                 playerController.IsOnLedge = false;
