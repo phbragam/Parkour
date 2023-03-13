@@ -141,6 +141,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public bool HasControl {
+        get => hasControl;
+        set => hasControl = value;
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = new Color(0, 1, 0, 0.5f);

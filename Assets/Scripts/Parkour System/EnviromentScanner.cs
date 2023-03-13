@@ -43,7 +43,7 @@ public class EnviromentScanner : MonoBehaviour
         if (moveDir == Vector3.zero)
             return false;
 
-        float originOffset = .6f;
+        float originOffset = .5f;
         var origin = transform.position + moveDir * originOffset + Vector3.up;
 
         if (PhysicsUtil.ThreeRaycasts(origin, Vector3.down, 0.25f, transform,
